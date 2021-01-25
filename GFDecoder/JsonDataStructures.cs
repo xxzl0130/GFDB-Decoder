@@ -133,11 +133,11 @@ namespace GFDecoder
         public int coin_ap;
         public int turn_limit;
         public string limit_gun_pool;
-        public int limit_team;
+        public string limit_team;
         public string map_res_name;
         public string map_information;
         public int is_hide;
-        public int is_snow;
+        public string is_snow;
         public string adaptive_gun;
         public string fog_length;
         public string fog_color;
@@ -183,7 +183,7 @@ namespace GFDecoder
         public int map_eff_height = 0;
         public int map_offset_x = 0;
         public int map_offset_y = 0;
-        public List<int> win_objs = new List<int>();
+        public List<string> win_objs = new List<string>();
         public bool has_medal_obj = false;
         public bool no_map = false;
     }

@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace GFDecoder
 {
@@ -212,7 +213,7 @@ namespace GFDecoder
                     campaignInfo[campaign_id].mission_ids.Add(mission.id);
                 }
 
-                string[] mapinfo = mission.map_information.Split('|');
+                string[] mapinfo = mission.map_information.Split(';')[0].Split('|');
                 int[] mapOverallSize = BreakStringArray(mapinfo[0], s => int.Parse(s));
                 int[] mapChopSize = BreakStringArray(mapinfo[1], s => int.Parse(s));
                 int[] mapChopOffset = BreakStringArray(mapinfo[2], s => int.Parse(s));
@@ -223,12 +224,12 @@ namespace GFDecoder
                 mission.map_offset_x = mapChopOffset[0];
                 mission.map_offset_y = mapChopOffset[1];
 
-                foreach (var win_obj in BreakStringArray(mission.type, s => int.Parse(s), ';'))
+                foreach (var win_obj in mission.type.Split(';'))
                 {
                     mission.win_objs.Add(win_obj);
                 }
                 mission.has_medal_obj = mission.special_type == 0 && mission.if_emergency != 2;
-    }
+            }
 
             foreach (var spot in spotInfo.Values)
             {
@@ -412,6 +413,11 @@ namespace GFDecoder
                         var info_tokens = enemy_infos[j].Split('-');
                         var original_team_id = int.Parse(info_tokens[0]);
                         var is_night = int.Parse(info_tokens[1]) == 1;
+                        if (!enemyTeamInfo.ContainsKey(original_team_id))
+                        {
+                            //MessageBox.Show(enemy_infos[j] + "\n" + original_team_id);
+                            continue;
+                        }
                         var original_team = enemyTeamInfo[original_team_id];
 
                         var team = new enemy_team_info
