@@ -72,7 +72,7 @@ namespace GFDecoder
             {
                 MessageBox.Show(ex.ToString());
             }
-}
+        }
 
         private void txtJson_TextChanged(object sender, EventArgs e)
         {

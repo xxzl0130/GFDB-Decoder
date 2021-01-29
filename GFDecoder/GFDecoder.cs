@@ -532,7 +532,20 @@ namespace GFDecoder
                 }
 
             }
+            
+            var spot2mission = new Dictionary<int,int>();
+            foreach (var it in spotInfo)
+            {
+                spot2mission[it.Value.id] = it.Value.mission_id;
+            }
 
+            File.WriteAllText(outputpath + "\\spot2mission.json", JsonConvert.SerializeObject(spot2mission).ToString());
+            var enemy2mission = new Dictionary<int,int>();
+            foreach (var it in enemyTeamInfo)
+            {
+                enemy2mission[it.Value.id] = spot2mission.ContainsKey(it.Value.spot_id) ? spot2mission[it.Value.spot_id] : 0;
+            }
+            File.WriteAllText(outputpath + "\\enemy2mission.json", JsonConvert.SerializeObject(enemy2mission).ToString());
             //GunRateTest(debugLog);
 
             Directory.CreateDirectory(outputpath);
