@@ -272,7 +272,9 @@ namespace GFDecoder
         public int id;
         public string name;
         public string en_name;
-        public string code;
+        //public string code;
+        public int develop_duration;
+        public int type;
         //public string introduce;
         //public string en_introduce;
         public int rank;
