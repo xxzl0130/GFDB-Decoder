@@ -563,6 +563,23 @@ namespace GFDecoder
             }
             File.WriteAllText(outputpath + "\\enemy2mission.json", JsonConvert.SerializeObject(enemy2mission).ToString());
 
+            var missionEnemies = new Dictionary<int,HashSet<int>>();
+            foreach (var it in enemyTeamInfo)
+            {
+                var mission = enemy2mission.ContainsKey(it.Value.spot_id) ? enemy2mission[it.Value.id] : 0;
+                if(mission == 0)
+                    continue;
+                if (missionEnemies.ContainsKey(mission))
+                {
+                    missionEnemies[mission].Add(it.Value.id);
+                }
+                else
+                {
+                    missionEnemies.Add(mission,new HashSet<int>(){ it.Value.id });
+                }
+            }
+            File.WriteAllText(outputpath + "\\missionEnemies.json", JsonConvert.SerializeObject(missionEnemies).ToString());
+
             File.WriteAllText(Path.Combine(outputpath, "debug_log.txt"), debugLog.ToString());
         }
 

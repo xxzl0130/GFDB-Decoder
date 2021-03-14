@@ -327,3 +327,5 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+/text_extractor/locales
+/text_extractor/resource
