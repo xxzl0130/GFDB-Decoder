@@ -555,32 +555,57 @@ namespace GFDecoder
                 spot2mission[it.Value.id] = it.Value.mission_id;
             }
 
-            File.WriteAllText(outputpath + "\\spot2mission.json", JsonConvert.SerializeObject(spot2mission).ToString());
+            File.WriteAllText(outputpath + "\\spot2mission.json", JsonConvert.SerializeObject(spot2mission));
             var enemy2mission = new Dictionary<int, int>();
             foreach (var it in enemyTeamInfo)
             {
                 enemy2mission[it.Value.id] = spot2mission.ContainsKey(it.Value.spot_id) ? spot2mission[it.Value.spot_id] : 0;
             }
-            File.WriteAllText(outputpath + "\\enemy2mission.json", JsonConvert.SerializeObject(enemy2mission).ToString());
+            File.WriteAllText(outputpath + "\\enemy2mission.json", JsonConvert.SerializeObject(enemy2mission));
 
             var missionEnemies = new Dictionary<int,HashSet<int>>();
+            var missionRewards = new Dictionary<int, MissionRewardPool>();
             foreach (var it in enemyTeamInfo)
             {
                 var mission = enemy2mission.ContainsKey(it.Value.spot_id) ? enemy2mission[it.Value.id] : 0;
                 if(mission == 0)
                     continue;
-                if (missionEnemies.ContainsKey(mission))
+                var equips = it.Value.equip_s_probability.Split(',').Select(s =>
                 {
-                    missionEnemies[mission].Add(it.Value.id);
+                    int.TryParse(s, out var result);
+                    return result;
+                }).ToList();
+                var guns = it.Value.reward_gun_pool.Split(',').Select(s =>
+                {
+                    int.TryParse(s, out var result);
+                    return result;
+                }).ToList();
+
+                if (!missionEnemies.ContainsKey(mission))
+                {
+                    missionEnemies.Add(mission, new HashSet<int>());
+                    missionRewards.Add(mission,new MissionRewardPool());
                 }
-                else
+                missionEnemies[mission].Add(it.Value.id);
+                var rewards = missionRewards[mission];
+                foreach (var gun in guns.Where(gun => gun != 0))
                 {
-                    missionEnemies.Add(mission,new HashSet<int>(){ it.Value.id });
+                    rewards.reward_gun_pool.Add(gun);
+                }
+                foreach (var equip in equips.Where(equip => equip != 0))
+                {
+                    rewards.reward_equip_pool.Add(equip);
                 }
             }
-            File.WriteAllText(outputpath + "\\missionEnemies.json", JsonConvert.SerializeObject(missionEnemies).ToString());
+            File.WriteAllText(outputpath + "\\missionEnemies.json", JsonConvert.SerializeObject(missionEnemies));
+            File.WriteAllText(outputpath + "\\missionRewards.json", JsonConvert.SerializeObject(missionRewards));
 
             File.WriteAllText(Path.Combine(outputpath, "debug_log.txt"), debugLog.ToString());
+        }
+
+        public class MissionRewardPool
+        {
+            public HashSet<int> reward_gun_pool = new HashSet<int>(), reward_equip_pool = new HashSet<int>();
         }
 
         public static T[] BreakStringArray<T>(string str, Converter<string, T> converter, char seperator = ',')
